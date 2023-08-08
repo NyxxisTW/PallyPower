@@ -76,10 +76,12 @@ PALLYPOWER_OPTIONS_MIGHT_ON_CASTERS = "Enable Blessing of Might on Casters";
 PALLYPOWER_OPTIONS_MIGHT_ON_HUNTERS = "Enable Blessing of Might on Hunters";
 PALLYPOWER_OPTIONS_MASSIGN_PETS = "Enable mass assigment for Pets";
 PALLYPOWER_OPTIONS_WARLOCK_PETS = "Enable buffs for Warlock Pets";
-PALLYPOWER_OPTIONS_LEADER_WARNING = "Leader warning mask";
-PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT = 1
+PALLYPOWER_OPTIONS_LEADER_WARNING_RAID = "Leader warning mask in RAID";
+PALLYPOWER_OPTIONS_LEADER_WARNING_PARTY = "Leader warning mask in PARTY";
+PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_RAID = 13
+PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_PARTY = 0
 
-if GetLocale() == "deDE" then
+if (GetLocale() == "deDE") then
 	-- by Nextorus @ EU-Alexstrasza (nexter@walsweer.de)
 	PallyPower_BlessingID = {
 		[0] = "Weisheit",
@@ -138,7 +140,7 @@ if GetLocale() == "deDE" then
 	-- XML Localization
 	PALLYPOWER_CLEAR = "L\195\182schen"
 	PALLYPOWER_REFRESH = "Neu abfragen"
-elseif GetLocale() == "frFR" then
+elseif (GetLocale() == "frFR") then
 	-- by Gagou @ EU-Drek'Thar (thomas@ranchon.org)
 	PallyPower_BlessingID = {
 		[0] = "de sagesse",

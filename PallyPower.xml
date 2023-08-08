@@ -813,7 +813,7 @@
 			<OnEvent>PallyPower_OnEvent(event)</OnEvent>
 			<OnMouseUp>PallyPowerFrame_MouseUp()</OnMouseUp>
 			<OnMouseDown>PallyPowerFrame_MouseDown(arg1)</OnMouseDown>
-			<OnHide>if this.isMoving then this:StopMovingOrSizing(); this.isMoving = false end</OnHide>
+			<OnHide>if (this.isMoving) then this:StopMovingOrSizing(); this.isMoving = false end</OnHide>
 		</Scripts>
 	</Frame>
 
@@ -825,7 +825,7 @@
 
 	<Frame name="PallyPower_OptionsFrame" hidden="true" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
 		<TitleRegion setAllPoints="true"/>
-		<Size x="240" y="340"/>
+		<Size x="240" y="355"/>
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/>
 		</Anchors>
@@ -848,84 +848,91 @@
 				<FontString name="$parentOption1" text="PALLYPOWER_OPTIONS_SCAN" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-35"/>
+							<Offset x="8" y="-38"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentOption2" text="PALLYPOWER_OPTIONS_SCAN2" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" >
-							<Offset x="8" y="-60"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption1" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption3" text="PALLYPOWER_OPTIONS_LEADER_WARNING" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption3" text="PALLYPOWER_OPTIONS_LEADER_WARNING_RAID" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-85"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption2" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption4" text="PALLYPOWER_OPTIONS_FEEDBACK_CHAT" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption4" text="PALLYPOWER_OPTIONS_LEADER_WARNING_PARTY" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-110"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption3" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption5" text="PALLYPOWER_OPTIONS_FIVEMIN" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption5" text="PALLYPOWER_OPTIONS_FEEDBACK_CHAT" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-135"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption4" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption6" text="PALLYPOWER_OPTIONS_BLESSING_SPAM" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption6" text="PALLYPOWER_OPTIONS_FIVEMIN" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-160"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption5" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption7" text="PALLYPOWER_OPTIONS_SALVATION_ON_WARRIORS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption7" text="PALLYPOWER_OPTIONS_BLESSING_SPAM" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-185"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption6" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption8" text="PALLYPOWER_OPTIONS_WISDOM_ON_MELEES" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption8" text="PALLYPOWER_OPTIONS_SALVATION_ON_WARRIORS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-210"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption7" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption9" text="PALLYPOWER_OPTIONS_MIGHT_ON_CASTERS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption9" text="PALLYPOWER_OPTIONS_WISDOM_ON_MELEES" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-235"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption8" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption10" text="PALLYPOWER_OPTIONS_MIGHT_ON_HUNTERS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption10" text="PALLYPOWER_OPTIONS_MIGHT_ON_CASTERS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-260"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption9" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption11" text="PALLYPOWER_OPTIONS_MASSIGN_PETS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption11" text="PALLYPOWER_OPTIONS_MIGHT_ON_HUNTERS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-285"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption10" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentOption12" text="PALLYPOWER_OPTIONS_WARLOCK_PETS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+				<FontString name="$parentOption12" text="PALLYPOWER_OPTIONS_MASSIGN_PETS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="8" y="-310"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption11" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption13" text="PALLYPOWER_OPTIONS_WARLOCK_PETS" inherits="PallyPowerOptionStringTemplate" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentOption12" relativePoint="BOTTOMLEFT">
+							<Offset x="0" y="-8"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -979,14 +986,14 @@
 					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
 					<OnEnterPressed>PallyPower_OptionsFrameScan2:SetFocus()</OnEnterPressed>
 					<OnEscapePressed>this:GetParent():Hide()</OnEscapePressed>
-					<OnTextChanged>if this:GetNumber() > 0 then PP_Options.ScanFreq = this:GetNumber() end</OnTextChanged>
+					<OnTextChanged>if (this:GetNumber() > 0) then PP_Options.ScanFreq = this:GetNumber() end</OnTextChanged>
 				</Scripts>
 			</EditBox>
 			<EditBox name="$parentScan2" enableMouse="true" letters="8" numeric="true" autoFocus="false">
 				<Size x="50" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-60"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentScan1" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -1022,14 +1029,14 @@
 					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
 					<OnEnterPressed>PallyPower_OptionsFrameScan1:SetFocus()</OnEnterPressed>
 					<OnEscapePressed>this:GetParent():Hide()</OnEscapePressed>
-					<OnTextChanged>if this:GetNumber() > 0 then PP_Options.ScanPerFrame = this:GetNumber() end</OnTextChanged>
+					<OnTextChanged>if (this:GetNumber() > 0) then PP_Options.ScanPerFrame = this:GetNumber() end</OnTextChanged>
 				</Scripts>
 			</EditBox>
-			<EditBox name="$parentLeaderWarning" enableMouse="true" letters="8" numeric="true" autoFocus="false">
+			<EditBox name="$parentLeaderWarningRaid" enableMouse="true" letters="8" numeric="true" autoFocus="false">
 				<Size x="50" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-85"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentScan2" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -1062,17 +1069,61 @@
 				<Scripts>
 					<OnEnter>PallyPower_ShowLeaderWarningLegend()</OnEnter>
 					<OnLeave>HideUIPanel(GameTooltip)</OnLeave>
-					<OnShow>this:SetNumeric(1) if not PP_Options.LeaderWarningMask then this:SetText(PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT) else this:SetText(PP_Options.LeaderWarningMask) end</OnShow>
+					<OnShow>this:SetNumeric(1) if (not PP_Options.LeaderWarningMask.Raid) then this:SetText(PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT) else this:SetText(PP_Options.LeaderWarningMask.Raid) end</OnShow>
 					<OnTabPressed>PallyPower_OptionsFrameScan1:SetFocus()</OnTabPressed>
 					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
 					<OnEscapePressed>this:GetParent():Hide()</OnEscapePressed>
-					<OnTextChanged>PP_Options.LeaderWarningMask = this:GetNumber()</OnTextChanged>
+					<OnTextChanged>PP_Options.LeaderWarningMask.Raid = this:GetNumber()</OnTextChanged>
+				</Scripts>
+			</EditBox>
+			<EditBox name="$parentLeaderWarningParty" enableMouse="true" letters="8" numeric="true" autoFocus="false">
+				<Size x="50" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentLeaderWarningRaid" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size x="10" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+				<Scripts>
+					<OnEnter>PallyPower_ShowLeaderWarningLegend()</OnEnter>
+					<OnLeave>HideUIPanel(GameTooltip)</OnLeave>
+					<OnShow>this:SetNumeric(1) if (not PP_Options.LeaderWarningMask.Party) then this:SetText(PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT) else this:SetText(PP_Options.LeaderWarningMask.Party) end</OnShow>
+					<OnTabPressed>PallyPower_OptionsFrameScan1:SetFocus()</OnTabPressed>
+					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
+					<OnEscapePressed>this:GetParent():Hide()</OnEscapePressed>
+					<OnTextChanged>PP_Options.LeaderWarningMask.Party = this:GetNumber()</OnTextChanged>
 				</Scripts>
 			</EditBox>
 			<CheckButton name="$parentFeedback" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-110"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentLeaderWarningParty" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1083,8 +1134,8 @@
 			<CheckButton name="$parentFiveMin" inherits="PallyPowerCheckboxTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-135"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentFeedback" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1095,8 +1146,8 @@
 			<CheckButton name="$parentBlessingSpam" inherits="PallyPowerCheckboxTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-160"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentFiveMin" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1107,8 +1158,8 @@
 			<CheckButton name="$parentSalvationOnWarriors" inherits="PallyPowerCheckboxTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-185"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentBlessingSpam" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1118,8 +1169,8 @@
 			</CheckButton>
 			<CheckButton name="$parentWisdomOnMelees" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-210"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentSalvationOnWarriors" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1129,8 +1180,8 @@
 			</CheckButton>
 			<CheckButton name="$parentMightOnCasters" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-235"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentWisdomOnMelees" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1140,8 +1191,8 @@
 			</CheckButton>
 			<CheckButton name="$parentMightOnHunters" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-260"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMightOnCasters" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1151,8 +1202,8 @@
 			</CheckButton>
 			<CheckButton name="$parentMAssignPets" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-285"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMightOnHunters" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -1162,8 +1213,8 @@
 			</CheckButton>
 			<CheckButton name="$parentWarlockPets" inherits="PallyPowerCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-5" y="-310"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentMAssignPets" relativePoint="BOTTOMRIGHT">
+						<Offset x="0" y="-4"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
