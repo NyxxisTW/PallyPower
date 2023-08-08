@@ -10,6 +10,40 @@ PallyPower_Assignments = {}
 
 PallyPower = {}
 
+PP_Options = {
+	ScaleMain = 1,		-- corner of main window docked to
+	ScaleBar = 1,		-- corner menu window is docked from
+	ScanFreq = 10,
+	ScanPerFrame = 1,
+	FiveMin = false,
+	LeaderWarning = true,
+	LeaderWarningMask = {
+		Raid = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_RAID,
+		Party = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_PARTY,
+	},
+	BlessingSpam = false,
+	SalvationOnWarriors = true,
+	WisdomOnMelees = true,
+	MightOnCasters = true,
+	MightOnHunters = true,
+	MAssignPets = true,
+	WarlockPets = false
+}
+
+PP_NextScan = PP_Options.ScanFreq
+
+LastCast = {}
+LastCastOn = {}
+PP_Symbols = 0
+
+Assignment = {}
+
+CurrentBuffs = {}
+
+PP_PREFIX = "PLPWR"
+
+local PPSM_Excluded = {}
+
 local function PP_UpdateBlessingIcons()
 	if (PP_Options and PP_Options.FiveMin) then
 		BlessingIcon = {
@@ -50,10 +84,6 @@ BuffIcon = {
 	[11] = "Interface\\Icons\\Spell_Nature_LightningShield"				-- Sanctuary
 }
 
-LastCast = {}
-LastCastOn = {}
-PP_Symbols = 0
-
 PallyPower_ClassTexture = {
 	[0] = "Interface\\AddOns\\PallyPower\\Icons\\Warrior",
 	[1] = "Interface\\AddOns\\PallyPower\\Icons\\Rogue",
@@ -67,34 +97,6 @@ PallyPower_ClassTexture = {
 	[9] = "Interface\\Icons\\Ability_hunter_beasttraining"
 }
 
-PP_Options = {
-	ScaleMain = 1,		-- corner of main window docked to
-	ScaleBar = 1,		-- corner menu window is docked from
-	ScanFreq = 10,
-	ScanPerFrame = 1,
-	FiveMin = false,
-	LeaderWarning = true,
-	LeaderWarningMask = {
-		Raid = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_RAID,
-		Party = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_PARTY,
-	},
-	BlessingSpam = false,
-	SalvationOnWarriors = true,
-	WisdomOnMelees = true,
-	MightOnCasters = true,
-	MightOnHunters = true,
-	MAssignPets = true,
-	WarlockPets = false
-}
-
-PP_NextScan = PP_Options.ScanFreq
-
-Assignment = {}
-
-CurrentBuffs = {}
-
-PP_PREFIX = "PLPWR"
-
 local START_COLOR = '\124CFF'
 local END_COLOR = '\124r'
 local PP_COLOR = "F48CBA"
@@ -102,9 +104,6 @@ local PP_COLOR = "F48CBA"
 local function Print(msg, r, g, b, a)
 	DEFAULT_CHAT_FRAME:AddMessage(START_COLOR..PP_COLOR.."[Pally Power]: "..END_COLOR..tostring(msg), r, g, b, a)
 end
-
-local PPSM_Excluded = {}
-
 
 
 function PallyPower_OnLoad()
