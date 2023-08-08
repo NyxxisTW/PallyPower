@@ -10,7 +10,7 @@ PallyPower_Assignments = {}
 
 PallyPower = {}
 
-function PP_UpdateBlessingIcons()
+local function PP_UpdateBlessingIcons()
 	if	PP_Options and PP_Options.FiveMin then
 		BlessingIcon = {
 			[0] = "Interface\\Icons\\Spell_Holy_SealOfWisdom",					-- Wisdom
@@ -75,6 +75,7 @@ PP_Options = {
 	FiveMin = false,
 	LeaderWarning = true,
 	LeaderWarningMask = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT,
+	BlessingSpam = false,
 	SalvationOnWarriors = true,
 	WisdomOnMelees = true,
 	MightOnCasters = true,
@@ -91,16 +92,20 @@ CurrentBuffs = {}
 
 PP_PREFIX = "PLPWR"
 
-local function PP_Debug(string)
-	if	PP_DebugEnabled then
-		if	not string then
-			string = "(nil)"
-		end
-		DEFAULT_CHAT_FRAME:AddMessage("[PP] "..string, 1, 0, 0)
-	end
+local START_COLOR = '\124CFF'
+local END_COLOR = '\124r'
+local PP_COLOR = "F48CBA"
+
+local function Print(msg, r, g, b, a)
+	DEFAULT_CHAT_FRAME:AddMessage(START_COLOR..PP_COLOR.."[Pally Power]: "..END_COLOR..tostring(msg), r, g, b, a)
 end
 
+local PPSM_Excluded = {}
+
+
+
 function PallyPower_OnLoad()
+	tinsert(UISpecialFrames, PallyPowerFrame:GetName())
 	this:RegisterEvent("SPELLS_CHANGED")
 	this:RegisterEvent("PLAYER_ENTERING_WORLD")
 	this:RegisterEvent("CHAT_MSG_ADDON")
@@ -116,14 +121,6 @@ function PallyPower_OnLoad()
 end
 
 function PallyPower_SlashCommandHandler(msg)
-	if	msg == "debug" then
-		if	PP_DebugEnabled then
-			PP_DebugEnabled = nil
-		else
-			PP_DebugEnabled = true
-		end
-		return
-	end
 	if	msg == "report" then
 		PallyPower_Report()
 		return
@@ -145,6 +142,8 @@ function PallyPower_SlashCommandHandler(msg)
 			DEFAULT_CHAT_FRAME:AddMessage("You are not a paladin.", 1, 0, 0)
 			return
 		end
+		PP_Options.ScaleMain = 1.0
+		PallyPowerFrame:SetScale(PP_Options.ScaleMain)
 		local px = GetScreenWidth() / 2 - 55 * PP_Options.ScaleMain
 		local py = GetScreenHeight() / -2 + 20 * PP_Options.ScaleMain
 		PallyPowerBuffBar:SetPoint("TOPLEFT", px, py)
@@ -179,9 +178,7 @@ function PallyPower_OnUpdate(tdiff)
 	end
 	PP_NextScan = PP_NextScan - tdiff
 	if	PP_NextScan < 0 and PP_IsPally then
-		PP_Debug("Scanning")
-		PallyPower_ScanRaid()
-		PallyPower_UpdateUI()
+		if PallyPower_ScanRaid() then PallyPower_UpdateUI() end
 	end
 	for i, k in LastCast do
 		LastCast[i] = k - tdiff
@@ -195,10 +192,6 @@ function PallyPower_OnEvent(event)
 	end
 	if	event == "PLAYER_ENTERING_WORLD" and (not PallyPower_Assignments[UnitName("player")]) then
 		PallyPower_Assignments[UnitName("player")] = {}
-		local player = UnitName("player")
-		if	player == "Aznamir" then
-			PP_DebugEnabled = true
-		end
 	end
 	if	event == "CHAT_MSG_ADDON" and arg1 == PP_PREFIX and (arg3 == "PARTY" or arg3 == "RAID") then
 		PallyPower_ParseMessage(arg4, arg2)
@@ -222,7 +215,6 @@ function PallyPower_Report()
 	else
 		groupType = "PARTY"
 	end
-	PP_Debug(groupType)
 	SendChatMessage(PallyPower_Assignments1, groupType)
 	for name in AllPallys do
 		local blessings
@@ -234,7 +226,6 @@ function PallyPower_Report()
 			[4] = 0,
 			[5] = 0
 		}
-		PP_Debug(list[0])
 		for id = 0, 9 do
 			local bid = PallyPower_Assignments[name][id]
 			if	bid >= 0 then
@@ -255,7 +246,6 @@ function PallyPower_Report()
 			blessings = "Nothing"
 		end
 		SendChatMessage(name..": "..blessings, groupType)
-		PP_Debug(name..": "..blessings)
 	end
 	SendChatMessage(PallyPower_Assignments2, groupType)
 end
@@ -363,12 +353,16 @@ function PallyPower_UpdateUI()
 					btn.dead = {}
 					-- Calculate number of people who need buff.
 					local nneed = 0
-					local nhave = 0
 					local ndead = 0
+					local nhave = 0
+					local nppsm = 0  -- if all nhave is ppsm then display as noone having buff
 					if	CurrentBuffs[class] then
 						for member, stats in CurrentBuffs[class] do
 							if	stats["visible"] then
-								if	not stats[assign[class]] then 
+								if	string.find(BlessingIcon[assign[class]], "Salvation") and PPSM_Excluded[UnitName(member)] == true then
+									nhave = nhave + 1
+									nppsm = nppsm + 1
+								elseif	not stats[assign[class]] then
 									if	UnitIsDeadOrGhost(member) then
 										ndead = ndead + 1
 										tinsert(btn.dead, stats["name"])
@@ -395,8 +389,11 @@ function PallyPower_UpdateUI()
 
 					if	nneed > 0 or nhave > 0 then
 						BuffNum = BuffNum + 1
+
 						if	nhave == 0 then
 							btn:SetBackdropColor(1.0, 0.0, 0.0, 0.5)
+						elseif  nhave == nppsm then
+								btn:SetBackdropColor(0.0, 0.0, 0.0, 0.5)
 						elseif	nneed > 0 then
 							btn:SetBackdropColor(1.0, 1.0, 0.5, 0.5)
 						else
@@ -474,7 +471,6 @@ function PallyPower_ScanSpells()
 		end
 		PP_IsPally = true
 	else
-		PP_Debug("I'm not a paladin?? "..class)
 		PP_IsPally = nil
 		initalized = true
 	end
@@ -554,6 +550,11 @@ function PallyPower_SendMessage(msg)
 end
 
 function PallyPower_ParseMessage(sender, msg)
+	if string.find(msg, "PPSM ") then
+		local value = string.sub(msg, 6, 6)
+		local exName = string.sub(msg, 8)
+		PPSM_Excluded[exName] = value == "1"
+	end
 	if	sender == UnitName("player") then
 		return
 	end
@@ -850,7 +851,6 @@ end
 
 function PallyPower_ScanInventory()
 	if	not PP_IsPally then return end
-	PP_Debug("Scanning for symbols")
 	oldcount = PP_Symbols
 	PP_Symbols = 0
 	for bag = 0, 4 do
@@ -890,7 +890,7 @@ function PallyPower_BitAnd(a, b)
 end
 
 function PallyPower_ScanLeaderWarning()
-	if	PP_Options.LeaderWarningMask == 0 or PP_Options.LeaderWarningMask > 15 then
+	if	PP_Options.LeaderWarningMask <= 0 or PP_Options.LeaderWarningMask > 15 then
 		return
 	end
 	
@@ -926,7 +926,7 @@ function PallyPower_ScanLeaderWarning()
 				PallyPowerBuffBarTitleMarkRight:Show()
 			end
 			if	PallyPower_BitAnd(PP_Options.LeaderWarningMask, 4)  ~= 0 then
-				DEFAULT_CHAT_FRAME:AddMessage("[Pally Power]: Paladin roster update!")
+				Print("Paladin roster update!")
 			end
 			if	PallyPower_BitAnd(PP_Options.LeaderWarningMask, 8)  ~= 0 then
 				PlaySound("RaidWarning", "master")
@@ -942,7 +942,7 @@ PP_ScanInfo = nil
 
 function PallyPower_ScanRaid()
 	if	not PP_IsPally then
-		return
+		return false
 	end
 	PallyPower_ScanLeaderWarning()
 	if	not PP_ScanInfo then
@@ -972,11 +972,7 @@ function PallyPower_ScanRaid()
 			--	hunters (5) and warlocks (7)
 			if	cid == 5 or (cid == 7 and PP_Options.WarlockPets) then
 				local petId = "raidpet"..string.sub(unit, 5)
-				PP_Debug(petId)
-
 				local pet_name = UnitName(petId)
-				PP_Debug(petId)
-
 				if	pet_name then
 					local classID = 9
 					if	not PP_ScanInfo[classID] then
@@ -1020,15 +1016,15 @@ function PallyPower_ScanRaid()
 		end
 		tremove(PP_Scanners, 1)
 		tests = tests - 1
-		PP_Debug("Scanning "..unit.." and "..tests.." remain")
 		if	tests <= 0 then
-			return
+			return false
 		end
 	end
 	CurrentBuffs = PP_ScanInfo
 	PP_ScanInfo = nil
 	PP_NextScan = PP_Options.ScanFreq
 	PallyPower_ScanInventory()
+	return true
 end
 
 function PallyPower_GetClassID(class)
@@ -1055,7 +1051,6 @@ end
 
 function PallyPowerBuffButton_OnClick(btn, mousebtn)
 	ClearTarget()
-	PP_Debug("Casting "..btn.buffID.." on "..btn.classID)
 	local scStatus = GetCVar("autoSelfCast")
 	SetCVar("autoSelfCast", 0)
 	local spell = AllPallys[UnitName("player")][btn.buffID]["id"]
@@ -1065,8 +1060,7 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
 		RecentCast = true
 	end
 	for unit, stats in CurrentBuffs[btn.classID] do
-		if	SpellCanTargetUnit(unit) and not (RecentCast and string.find(table.concat(LastCastOn[btn.classID], " "), unit)) then
-			PP_Debug("Trying to cast on "..unit)
+		if	SpellCanTargetUnit(unit) and (not (RecentCast and string.find(table.concat(LastCastOn[btn.classID], " "), unit)) or PP_Options.BlessingSpam) then
 			SpellTargetUnit(unit)
 			PP_NextScan = 1
 			LastCast[btn.buffID..btn.classID] = PallyPower_GetBuffDuration()
@@ -1170,7 +1164,7 @@ end
 
 function PallyPower_ShowFeedback(msg, r, g, b, a)
 	if	PP_Options.ChatFeedback then
-		DEFAULT_CHAT_FRAME:AddMessage("[PallyPower] "..msg, r, g, b, a)
+		Print(msg, r, g, b, a)
 	else
 		UIErrorsFrame:AddMessage(msg, r, g, b, a)
 	end

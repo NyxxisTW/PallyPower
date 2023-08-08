@@ -69,6 +69,7 @@ PALLYPOWER_OPTIONS_SCAN = "Scan Frequency (seconds):"
 PALLYPOWER_OPTIONS_SCAN2 = "Poll Per Frame: "
 PALLYPOWER_OPTIONS_FEEDBACK_CHAT = "Show feedback in chat"
 PALLYPOWER_OPTIONS_FIVEMIN = "Use 5 min blessings ONLY"
+PALLYPOWER_OPTIONS_BLESSING_SPAM = "Enable Blessing Spam";
 PALLYPOWER_OPTIONS_SALVATION_ON_WARRIORS = "Enable Blessing of Salvation on Warriors";
 PALLYPOWER_OPTIONS_WISDOM_ON_MELEES = "Enable Blessing of Wisdom on Melees";
 PALLYPOWER_OPTIONS_MIGHT_ON_CASTERS = "Enable Blessing of Might on Casters";
@@ -76,7 +77,7 @@ PALLYPOWER_OPTIONS_MIGHT_ON_HUNTERS = "Enable Blessing of Might on Hunters";
 PALLYPOWER_OPTIONS_MASSIGN_PETS = "Enable mass assigment for Pets";
 PALLYPOWER_OPTIONS_WARLOCK_PETS = "Enable buffs for Warlock Pets";
 PALLYPOWER_OPTIONS_LEADER_WARNING = "Leader warning mask";
-PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT = 13
+PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT = 1
 
 if GetLocale() == "deDE" then
 	-- by Nextorus @ EU-Alexstrasza (nexter@walsweer.de)
