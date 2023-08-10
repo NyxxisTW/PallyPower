@@ -106,110 +106,6 @@ local function Print(msg, r, g, b, a)
 end
 
 
-function PallyPower_OnLoad()
-	tinsert(UISpecialFrames, PallyPowerFrame:GetName())
-	this:RegisterEvent("SPELLS_CHANGED")
-	this:RegisterEvent("PLAYER_ENTERING_WORLD")
-	this:RegisterEvent("CHAT_MSG_ADDON")
-	this:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
-	this:RegisterEvent("PLAYER_LOGIN")
-	this:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	this:SetBackdropColor(0.0, 0.0, 0.0, 0.5)
-	this:SetScale(1)
-	SlashCmdList["PALLYPOWER"] =
-		function(msg)
-			PallyPower_SlashCommandHandler(msg)
-		end
-end
-
-function PallyPower_SlashCommandHandler(msg)
-	if (msg == "report") then
-		PallyPower_Report()
-		return
-	end
-	if (msg == "show") then
-		if (not PP_IsPally and UnitClass("player") ~= "Paladin") then
-			DEFAULT_CHAT_FRAME:AddMessage("You are not a paladin.", 1, 0, 0)
-			return
-		end
-		PallyPowerBuffBar:Show()
-		return
-	end
-	if (msg == "hide") then
-		PallyPowerBuffBar:Hide()
-		return
-	end
-	if (msg == "center") then
-		if (not PP_IsPally and UnitClass("player") ~= "Paladin") then
-			DEFAULT_CHAT_FRAME:AddMessage("You are not a paladin.", 1, 0, 0)
-			return
-		end
-		PP_Options.ScaleMain = 1.0
-		PallyPowerFrame:SetScale(PP_Options.ScaleMain)
-		local px = GetScreenWidth() / 2 - 55 * PP_Options.ScaleMain
-		local py = GetScreenHeight() / -2 + 20 * PP_Options.ScaleMain
-		PallyPowerBuffBar:SetPoint("TOPLEFT", px, py)
-		PallyPowerBuffBar:Show()
-		return
-	end
-	if (msg == "ispally") then
-		DEFAULT_CHAT_FRAME:AddMessage(tostring(PP_IsPally))
-		return
-	end
-	if (msg == "forcepally") then
-		PP_IsPally = true
-		return
-	end
-	if (msg == "forcenopally") then
-		PP_IsPally = false
-		return
-	end
-
-	if (PallyPowerFrame:IsVisible()) then
-		PallyPowerFrame:Hide()
-	else
-		PallyPowerFrame:Show()
-	end
-	PallyPower_UpdateUI()
-end
-
-function PallyPower_OnUpdate(tdiff)
-	if (not PP_Options.ScanFreq) then
-		PP_Options.ScanFreq = 10
-		PP_Options.ScanPerFrame = 1
-	end
-	PP_NextScan = PP_NextScan - tdiff
-	if (PP_NextScan < 0 and PP_IsPally) then
-		if PallyPower_ScanRaid() then PallyPower_UpdateUI() end
-	end
-	for i, k in LastCast do
-		LastCast[i] = k - tdiff
-	end
-end
-
-function PallyPower_OnEvent(event)
-	if (event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
-		PP_UpdateBlessingIcons()
-		PallyPower_ScanSpells()
-	end
-	if (event == "PLAYER_ENTERING_WORLD" and (not PallyPower_Assignments[UnitName("player")])) then
-		PallyPower_Assignments[UnitName("player")] = {}
-	end
-	if (event == "CHAT_MSG_ADDON" and arg1 == PP_PREFIX and (arg3 == "PARTY" or arg3 == "RAID")) then
-		PallyPower_ParseMessage(arg4, arg2)
-	end
-	if (event == "CHAT_MSG_COMBAT_FRIENDLY_DEATH" and PP_NextScan > 1) then
-		PP_NextScan = 1
-	end
-	if (event == "PLAYER_LOGIN") then
-		PallyPower_UpdateUI()
-	end
-	if (event == "PARTY_MEMBERS_CHANGED") then
-		PallyPower_ScanRaid()
-		PallyPower_UpdateUI()
-	end
-end
-
 function PallyPower_Report()
 	local groupType
 	if (GetNumRaidMembers() > 0) then
@@ -226,7 +122,7 @@ function PallyPower_Report()
 			[2] = 0,
 			[3] = 0,
 			[4] = 0,
-			[5] = 0
+			[5] = 0,
 		}
 		for id = 0, 9 do
 			local bid = PallyPower_Assignments[name][id]
@@ -357,13 +253,16 @@ function PallyPower_UpdateUI()
 					local nneed = 0
 					local ndead = 0
 					local nhave = 0
-					local nppsm = 0  -- if all nhave is ppsm then display as noone having buff
 					if (CurrentBuffs[class]) then
 						for member, stats in CurrentBuffs[class] do
 							if (stats["visible"]) then
 								if (string.find(BlessingIcon[assign[class]], "Salvation") and PPSM_Excluded[UnitName(member)] == true) then
-									nhave = nhave + 1
-									nppsm = nppsm + 1
+									if (UnitIsDeadOrGhost(member)) then
+										ndead = ndead + 1
+									else
+										nhave = nhave + 1
+									end
+									--nppsm = nppsm + 1
 								elseif (not stats[assign[class]]) then
 									if (UnitIsDeadOrGhost(member)) then
 										ndead = ndead + 1
@@ -391,11 +290,8 @@ function PallyPower_UpdateUI()
 
 					if (nneed > 0 or nhave > 0) then
 						BuffNum = BuffNum + 1
-
 						if (nhave == 0) then
 							btn:SetBackdropColor(1.0, 0.0, 0.0, 0.5)
-						elseif  nhave == nppsm then
-								btn:SetBackdropColor(0.0, 0.0, 0.0, 0.5)
 						elseif (nneed > 0) then
 							btn:SetBackdropColor(1.0, 1.0, 0.5, 0.5)
 						else
@@ -488,6 +384,14 @@ function PallyPower_Refresh()
 	PallyPower_UpdateUI()
 end
 
+function PallyPower_SendMessage(msg)
+	if (GetNumRaidMembers() == 0) then
+		SendAddonMessage(PP_PREFIX, msg, "PARTY", UnitName("player"))
+	else
+		SendAddonMessage(PP_PREFIX, msg, "RAID", UnitName("player"))
+	end
+end
+
 function PallyPower_Clear(fromupdate, who)
 	if (not who) then
 		who = UnitName("player")
@@ -543,19 +447,11 @@ function PallyPower_SendSelf()
 	PallyPower_SendMessage("SYMCOUNT "..PP_Symbols)
 end
 
-function PallyPower_SendMessage(msg)
-	if (GetNumRaidMembers() == 0) then
-		SendAddonMessage(PP_PREFIX, msg, "PARTY", UnitName("player"))
-	else
-		SendAddonMessage(PP_PREFIX, msg, "RAID", UnitName("player"))
-	end
-end
-
 function PallyPower_ParseMessage(sender, msg)
-	if string.find(msg, "PPSM ") then
+	if (string.sub(msg, 1, 5) == "SALV ") then
 		local value = string.sub(msg, 6, 6)
 		local exName = string.sub(msg, 8)
-		PPSM_Excluded[exName] = value == "1"
+		PPSM_Excluded[exName] = (value == "1")
 	end
 	if (sender == UnitName("player")) then
 		return
@@ -929,19 +825,20 @@ function PallyPower_ScanLeaderWarning()
 					numPaladins = numPaladins + 1
 				end
 			end
-		end
-		if ((PP_NumPaladins_Old ~= nil) and (numPaladins ~= PP_NumPaladins_Old)) then
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 1) ~= 0) then
-				PallyPowerBuffBarTitleMarkLeft:Show()
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 2) ~= 0) then
-				PallyPowerBuffBarTitleMarkRight:Show()
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 4) ~= 0) then
-				Print("Paladin roster update!")
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 8) ~= 0) then
-				PlaySound("RaidWarning", "master")
+
+			if ((PP_NumPaladins_Old ~= nil) and (numPaladins ~= PP_NumPaladins_Old)) then
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 1) ~= 0) then
+					PallyPowerBuffBarTitleMarkLeft:Show()
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 2) ~= 0) then
+					PallyPowerBuffBarTitleMarkRight:Show()
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 4) ~= 0) then
+					Print("Paladin roster update!")
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Raid, 8) ~= 0) then
+					PlaySound("RaidWarning", "master")
+				end
 			end
 		end
 		PP_NumPaladins_Old = numPaladins
@@ -956,19 +853,20 @@ function PallyPower_ScanLeaderWarning()
 			if (UnitClass("party"..i) == "Paladin") then
 				numPaladins = numPaladins + 1
 			end
-		end
-		if ((PP_NumPaladins_Old ~= nil) and (numPaladins ~= PP_NumPaladins_Old)) then
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 1) ~= 0) then
-				PallyPowerBuffBarTitleMarkLeft:Show()
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 2) ~= 0) then
-				PallyPowerBuffBarTitleMarkRight:Show()
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 4) ~= 0) then
-				Print("Paladin roster update!")
-			end
-			if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 8) ~= 0) then
-				PlaySound("RaidWarning", "master")
+
+			if ((PP_NumPaladins_Old ~= nil) and (numPaladins ~= PP_NumPaladins_Old)) then
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 1) ~= 0) then
+					PallyPowerBuffBarTitleMarkLeft:Show()
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 2) ~= 0) then
+					PallyPowerBuffBarTitleMarkRight:Show()
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 4) ~= 0) then
+					Print("Paladin roster update!")
+				end
+				if (PallyPower_BitAnd(PP_Options.LeaderWarningMask.Party, 8) ~= 0) then
+					PlaySound("RaidWarning", "master")
+				end
 			end
 		end
 		PP_NumPaladins_Old = numPaladins
@@ -1089,7 +987,8 @@ function PallyPowerBuffButton_OnLoad(btn)
 end
 
 function PallyPowerBuffButton_OnClick(btn, mousebtn)
-	ClearTarget()
+	local targetingFriend = UnitIsFriend("player", "target")
+	if (targetingFriend) then ClearTarget() end
 	local scStatus = GetCVar("autoSelfCast")
 	SetCVar("autoSelfCast", 0)
 	local spell = AllPallys[UnitName("player")][btn.buffID]["id"]
@@ -1108,13 +1007,13 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
 			end
 			tinsert(LastCastOn[btn.classID], unit)
 			PallyPower_ShowFeedback(format(PallyPower_Casting, PallyPower_BlessingID[btn.buffID], PallyPower_ClassID[btn.classID], UnitName(unit)), 0.0, 1.0, 0.0)
-			TargetLastTarget()
+			if (targetingFriend) then TargetLastTarget() end
 			SetCVar("autoSelfCast", scStatus)
 			return
 		end
 	end
 	SpellStopTargeting()
-	TargetLastTarget()
+	if (targetingFriend) then TargetLastTarget() end
 	PallyPower_ShowFeedback(format(PallyPower_CouldntFind, PallyPower_BlessingID[btn.buffID], PallyPower_ClassID[btn.classID]), 0.0, 1.0, 0.0)
 	SetCVar("autoSelfCast", scStatus)
 end
@@ -1235,4 +1134,105 @@ function PallyPower_BarToggle()
 		PallyPowerBuffBar:Show()
 		PallyPower_ShowFeedback(" Bar visible", 0.5, 1, 1, 1)
 	end
+end
+
+
+function PallyPower_OnUpdate(tdiff)
+	if (not PP_Options.ScanFreq) then
+		PP_Options.ScanFreq = 10
+		PP_Options.ScanPerFrame = 1
+	end
+	PP_NextScan = PP_NextScan - tdiff
+	if (PP_NextScan < 0 and PP_IsPally) then
+		if (PallyPower_ScanRaid()) then PallyPower_UpdateUI() end
+	end
+	for i, k in LastCast do
+		LastCast[i] = k - tdiff
+	end
+end
+
+function PallyPower_OnEvent(event)
+	if (event == "VARIABLES_LOADED") then
+		PallyPower_SendMessage("PPSM")
+	elseif (event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
+		PP_UpdateBlessingIcons()
+		PallyPower_ScanSpells()
+	elseif (event == "PLAYER_ENTERING_WORLD" and (not PallyPower_Assignments[UnitName("player")])) then
+		PallyPower_Assignments[UnitName("player")] = {}
+	elseif (event == "CHAT_MSG_ADDON" and arg1 == PP_PREFIX and (arg3 == "PARTY" or arg3 == "RAID")) then
+		PallyPower_ParseMessage(arg4, arg2)
+	elseif (event == "CHAT_MSG_COMBAT_FRIENDLY_DEATH" and PP_NextScan > 1) then
+		PP_NextScan = 1
+	elseif (event == "PLAYER_LOGIN") then
+		PallyPower_UpdateUI()
+	elseif (event == "PARTY_MEMBERS_CHANGED") then
+		PallyPower_ScanRaid()
+		PallyPower_UpdateUI()
+	end
+end
+
+function PallyPower_SlashCommandHandler(msg)
+	if (msg == "report") then
+		PallyPower_Report()
+		return
+	end
+	if (msg == "show") then
+		if (not PP_IsPally and UnitClass("player") ~= "Paladin") then
+			DEFAULT_CHAT_FRAME:AddMessage("You are not a paladin.", 1, 0, 0)
+			return
+		end
+		PallyPowerBuffBar:Show()
+		return
+	end
+	if (msg == "hide") then
+		PallyPowerBuffBar:Hide()
+		return
+	end
+	if (msg == "center") then
+		if (not PP_IsPally and UnitClass("player") ~= "Paladin") then
+			DEFAULT_CHAT_FRAME:AddMessage("You are not a paladin.", 1, 0, 0)
+			return
+		end
+		PP_Options.ScaleMain = 1.0
+		PallyPowerFrame:SetScale(PP_Options.ScaleMain)
+		local px = GetScreenWidth() / 2 - 55 * PP_Options.ScaleMain
+		local py = GetScreenHeight() / -2 + 20 * PP_Options.ScaleMain
+		PallyPowerBuffBar:SetPoint("TOPLEFT", px, py)
+		PallyPowerBuffBar:Show()
+		return
+	end
+	if (msg == "ispally") then
+		DEFAULT_CHAT_FRAME:AddMessage(tostring(PP_IsPally))
+		return
+	end
+	if (msg == "forcepally") then
+		PP_IsPally = true
+		return
+	end
+	if (msg == "forcenopally") then
+		PP_IsPally = false
+		return
+	end
+
+	if (PallyPowerFrame:IsVisible()) then
+		PallyPowerFrame:Hide()
+	else
+		PallyPowerFrame:Show()
+	end
+	PallyPower_UpdateUI()
+end
+
+
+function PallyPower_OnLoad()
+	tinsert(UISpecialFrames, PallyPowerFrame:GetName())
+	this:RegisterEvent("VARIABLES_LOADED")
+	this:RegisterEvent("SPELLS_CHANGED")
+	this:RegisterEvent("PLAYER_ENTERING_WORLD")
+	this:RegisterEvent("CHAT_MSG_ADDON")
+	this:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
+	this:RegisterEvent("PLAYER_LOGIN")
+	this:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	this:SetBackdropColor(0.0, 0.0, 0.0, 0.5)
+	this:SetScale(1)
+	SlashCmdList["PALLYPOWER"] = PallyPower_SlashCommandHandler
 end
