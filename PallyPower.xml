@@ -241,7 +241,7 @@
 					</Anchors>
 				</Texture>
 				<Texture name="$parentLine9" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
-					<Size  x="2" y="56"/>
+					<Size x="2" y="56"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLine8">
 							<Offset x="56" y="0"/>
@@ -306,7 +306,7 @@
 			<Button name="$parentClass0" inherits="BuffGridButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset  x="130" y="0"/>
+						<Offset x="130" y="0"/>
 					</Anchor>
 				</Anchors>
 			</Button>

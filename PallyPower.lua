@@ -97,8 +97,8 @@ PallyPower_ClassTexture = {
 	[9] = "Interface\\Icons\\Ability_hunter_beasttraining"
 }
 
-local START_COLOR = '\124CFF'
-local END_COLOR = '\124r'
+local START_COLOR = "\124CFF"
+local END_COLOR = "\124r"
 local PP_COLOR = "F48CBA"
 
 local function Print(msg, r, g, b, a)
@@ -171,7 +171,7 @@ function PallyPower_FormatTime(time)
 	secs = time - (mins * 60)
 	return string.format("%d:%02d", mins, secs)
 end
-  
+
 function PallyPowerGrid_Update()
 	if (not initalized) then PallyPower_ScanSpells() end
 	-- Pally 1 is always myself
@@ -285,7 +285,7 @@ function PallyPower_UpdateUI()
 						getglobal("PallyPowerBuffBarBuff"..BuffNum.."Text"):SetText(nneed.." ("..ndead..")")
 					else
 						getglobal("PallyPowerBuffBarBuff"..BuffNum.."Text"):SetText(nneed)
-					end		  
+					end
 					getglobal("PallyPowerBuffBarBuff"..BuffNum.."Time"):SetText(PallyPower_FormatTime(LastCast[assign[class]..class]))
 
 					if (nneed > 0 or nhave > 0) then
@@ -525,13 +525,13 @@ end
 
 
 function PallyPower_ShowCredits()
-   GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT")
-   GameTooltip:SetText(PallyPower_Credits1, 1, 1, 1)
-   GameTooltip:AddLine(PallyPower_Credits2, 1, 1, 1)
-   GameTooltip:AddLine(PallyPower_Credits3)
-   GameTooltip:AddLine(PallyPower_Credits4, 0, 1, 0)
-   GameTooltip:AddLine(PallyPower_Credits5)
-   GameTooltip:Show()
+	GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT")
+	GameTooltip:SetText(PallyPower_Credits1, 1, 1, 1)
+	GameTooltip:AddLine(PallyPower_Credits2, 1, 1, 1)
+	GameTooltip:AddLine(PallyPower_Credits3)
+	GameTooltip:AddLine(PallyPower_Credits4, 0, 1, 0)
+	GameTooltip:AddLine(PallyPower_Credits5)
+	GameTooltip:Show()
 end
 
 function PallyPower_ShowLeaderWarningLegend()
@@ -684,7 +684,7 @@ function PallyPower_PerformCycle(name, class)
 end
 
 function PallyPower_CanBuff(name, test)
-	if (test == 6) then 
+	if (test == 6) then
 		return true
 	end
 	if (not AllPallys[name][test] or AllPallys[name][test]["rank"] == 0) then
@@ -694,7 +694,7 @@ function PallyPower_CanBuff(name, test)
 end
 
 function PallyPower_NeedsBuff(class, test)
-	if (test == 6 or test == -1) then 
+	if (test == 6 or test == -1) then
 		return true
 	end
 	if (not PP_Options.SalvationOnWarriors) then
@@ -728,8 +728,8 @@ end
 function PallyPower_CheckRaidLeader(nick)
 	if (GetNumRaidMembers() == 0) then
 		for i = 1, GetNumPartyMembers(), 1 do
-			if (nick == UnitName("party"..i) and UnitIsPartyLeader("party"..i)) then 
-				return true 
+			if (nick == UnitName("party"..i) and UnitIsPartyLeader("party"..i)) then
+				return true
 			end
 		end
 		return false
@@ -966,7 +966,7 @@ end
 
 function PallyPower_GetClassID(class)
 	for id, name in PallyPower_ClassID do
-		if (name == class) then 
+		if (name == class) then
 			return id
 		end
 	end
@@ -1061,7 +1061,7 @@ function PallyPower_ScaleFrame(scale)
 	local oldscale = frame:GetScale() or 1
 	local framex = (frame:GetLeft() or PallyPowerPerOptions.XPos) * oldscale
 	local framey = (frame:GetTop() or PallyPowerPerOptions.YPos) * oldscale
-  
+
 	frame:SetScale(scale)
 	if (frame:GetName() == "PallyPowerFrame") then
 		really_setpoint(PallyPowerFrame, "TOPLEFT", "UIParent", "BOTTOMLEFT", framex / scale, framey / scale)
