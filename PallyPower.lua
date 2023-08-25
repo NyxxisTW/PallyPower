@@ -16,7 +16,6 @@ PP_Options = {
 	ScanFreq = 10,
 	ScanPerFrame = 1,
 	FiveMin = false,
-	LeaderWarning = true,
 	LeaderWarningMask = {
 		Raid = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_RAID,
 		Party = PALLYPOWER_OPTIONS_LEADER_WARNING_DEFAULT_PARTY,
@@ -379,7 +378,6 @@ function PallyPower_Refresh()
 	AllPallys = {}
 	PP_UpdateBlessingIcons()
 	PallyPower_ScanSpells()
-	PallyPower_SendSelf()
 	PallyPower_RequestSend()
 	PallyPower_UpdateUI()
 end
@@ -425,8 +423,6 @@ function PallyPower_SendSelf()
 	for id = 0, 5 do
 		if (not RankInfo[id]) then
 			msg = msg.."nn"
-		elseif (not RankInfo[id]["greater"]) then
-			msg = msg.."nn"
 		else
 			msg = msg..RankInfo[id]["rank"]
 			msg = msg..RankInfo[id]["talent"]
@@ -436,8 +432,7 @@ function PallyPower_SendSelf()
 	for id = 0, 9 do
 		if (not PallyPower_Assignments[UnitName("player")]) or
 			not PallyPower_Assignments[UnitName("player")][id] or
-			PallyPower_Assignments[UnitName("player")][id] == -1
-			then
+			PallyPower_Assignments[UnitName("player")][id] == -1 then
 			msg = msg.."n"
 		else
 			msg = msg..PallyPower_Assignments[UnitName("player")][id]
@@ -617,6 +612,9 @@ function PallyPower_PerformCycleBackwards(name, class)
 	shift = IsShiftKeyDown()
 	if (shift) then
 		class = 4 -- force pala (all buff possible) when shift wheeling
+	end
+	if (not PallyPower_Assignments[name]) then
+		PallyPower_Assignments[name] = {}
 	end
 	if (not PallyPower_Assignments[name][class]) then
 		cur = 6
@@ -1014,8 +1012,8 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
 	end
 	SpellStopTargeting()
 	if (targetingFriend) then TargetLastTarget() end
-	PallyPower_ShowFeedback(format(PallyPower_CouldntFind, PallyPower_BlessingID[btn.buffID], PallyPower_ClassID[btn.classID]), 0.0, 1.0, 0.0)
 	SetCVar("autoSelfCast", scStatus)
+	PallyPower_ShowFeedback(format(PallyPower_CouldntFind, PallyPower_BlessingID[btn.buffID], PallyPower_ClassID[btn.classID]), 0.0, 1.0, 0.0)
 end
 
 function PallyPowerBuffButton_OnEnter(btn)
@@ -1153,12 +1151,15 @@ end
 
 function PallyPower_OnEvent(event)
 	if (event == "VARIABLES_LOADED") then
+		PP_UpdateBlessingIcons()
+		local playerName = UnitName("player")
+		if (not PallyPower_Assignments[playerName]) then
+			PallyPower_Assignments[playerName] = {}
+		end
 		PallyPower_SendMessage("PPSM")
 	elseif (event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		PP_UpdateBlessingIcons()
 		PallyPower_ScanSpells()
-	elseif (event == "PLAYER_ENTERING_WORLD" and (not PallyPower_Assignments[UnitName("player")])) then
-		PallyPower_Assignments[UnitName("player")] = {}
 	elseif (event == "CHAT_MSG_ADDON" and arg1 == PP_PREFIX and (arg3 == "PARTY" or arg3 == "RAID")) then
 		PallyPower_ParseMessage(arg4, arg2)
 	elseif (event == "CHAT_MSG_COMBAT_FRIENDLY_DEATH" and PP_NextScan > 1) then
@@ -1227,7 +1228,6 @@ function PallyPower_OnLoad()
 	tinsert(UISpecialFrames, PallyPowerFrame:GetName())
 	this:RegisterEvent("VARIABLES_LOADED")
 	this:RegisterEvent("SPELLS_CHANGED")
-	this:RegisterEvent("PLAYER_ENTERING_WORLD")
 	this:RegisterEvent("CHAT_MSG_ADDON")
 	this:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
 	this:RegisterEvent("PLAYER_LOGIN")

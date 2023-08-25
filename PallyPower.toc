@@ -5,4 +5,7 @@
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: PP_Options, PallyPower_Assignments
 
+localization.lua
+PallyPower.lua
 PallyPower.xml
+PallyPower-BlessingSpam.lua

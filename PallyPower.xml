@@ -1,6 +1,7 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
-	<Script file="localization.lua"/>
-	<Script file="PallyPower.lua"/>
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
 
 	<Button name="PallyPowerResizeTemplate" virtual="true">
 		<Size x="16" y="16"/>
@@ -51,8 +52,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>PallyPowerGridButton_OnLoad(this); this:RegisterForClicks("LeftButtonUp","RightButtonUp"); this:EnableMouseWheel(1)</OnLoad>
-			<OnClick>PallyPowerGridButton_OnClick(this,arg1)</OnClick>
+			<OnLoad>PallyPowerGridButton_OnLoad(this) this:RegisterForClicks("LeftButtonUp", "RightButtonUp") this:EnableMouseWheel(1)</OnLoad>
+			<OnClick>PallyPowerGridButton_OnClick(this, arg1)</OnClick>
 			<OnEnter>PallyPowerGridButton_OnEnter(this)</OnEnter>
 			<OnLeave>PallyPowerGridButton_OnLeave(this)</OnLeave>
 			<OnMouseWheel>PallyPowerGridButton_OnMouseWheel(this, arg1)</OnMouseWheel>
@@ -103,8 +104,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>PallyPowerBuffButton_OnLoad(this); this:RegisterForClicks("LeftButtonUp","RightButtonUp")</OnLoad>
-			<OnClick>PallyPowerBuffButton_OnClick(this,arg1)</OnClick>
+			<OnLoad>PallyPowerBuffButton_OnLoad(this) this:RegisterForClicks("LeftButtonUp", "RightButtonUp")</OnLoad>
+			<OnClick>PallyPowerBuffButton_OnClick(this, arg1)</OnClick>
 			<OnEnter>PallyPowerBuffButton_OnEnter(this)</OnEnter>
 			<OnLeave>PallyPowerBuffButton_OnLeave(this)</OnLeave>
 		</Scripts>
@@ -813,7 +814,7 @@
 			<OnEvent>PallyPower_OnEvent(event)</OnEvent>
 			<OnMouseUp>PallyPowerFrame_MouseUp()</OnMouseUp>
 			<OnMouseDown>PallyPowerFrame_MouseDown(arg1)</OnMouseDown>
-			<OnHide>if (this.isMoving) then this:StopMovingOrSizing(); this.isMoving = false end</OnHide>
+			<OnHide>if (this.isMoving) then this:StopMovingOrSizing() this.isMoving = false end</OnHide>
 		</Scripts>
 	</Frame>
 
@@ -981,7 +982,7 @@
 				</Layers>
 				<FontString inherits="ChatFontNormal"/>
 				<Scripts>
-					<OnShow>this:SetNumeric(1); this:SetText(PP_Options.ScanFreq)</OnShow>
+					<OnShow>this:SetNumeric(1) this:SetText(PP_Options.ScanFreq)</OnShow>
 					<OnTabPressed>PallyPower_OptionsFrameScan2:SetFocus()</OnTabPressed>
 					<OnEnterPressed>PallyPower_OptionsFrameScan2:SetFocus()</OnEnterPressed>
 					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
@@ -1024,7 +1025,7 @@
 				</Layers>
 				<FontString inherits="ChatFontNormal"/>
 				<Scripts>
-					<OnShow>this:SetNumeric(1); this:SetText(PP_Options.ScanPerFrame)</OnShow>
+					<OnShow>this:SetNumeric(1) this:SetText(PP_Options.ScanPerFrame)</OnShow>
 					<OnTabPressed>PallyPower_OptionsFrameLeaderWarningRaid:SetFocus()</OnTabPressed>
 					<OnEnterPressed>PallyPower_OptionsFrameLeaderWarningRaid:SetFocus()</OnEnterPressed>
 					<OnEditFocusLost>this:HighlightText(0, 0)</OnEditFocusLost>
@@ -1142,7 +1143,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>this:SetChecked(PP_Options.FiveMin)</OnShow>
-					<OnClick>PP_Options.FiveMin = this:GetChecked(); PallyPower_Refresh()</OnClick>
+					<OnClick>PP_Options.FiveMin = this:GetChecked() PallyPower_Refresh()</OnClick>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentBlessingSpam" inherits="PallyPowerCheckboxTemplate">
